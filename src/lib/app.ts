@@ -62,7 +62,6 @@ function init(): void {
   const audio = new CosmicAudio(renderSound);
   const views = [...document.querySelectorAll<HTMLElement>('[data-view]')];
   const navLinks = [...document.querySelectorAll<HTMLAnchorElement>('.tabs [data-tab], .tabbar [data-tab]')];
-  const header = document.querySelector<HTMLElement>('.site-header');
   let activeTab: Tab | null = null;
   let openDialog: HTMLDialogElement | null = null;
   let litKey: string | null = null;
@@ -195,11 +194,9 @@ function init(): void {
     if (!event.relatedTarget) sky?.pointerLeave();
   });
 
-  if (header) {
-    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-  }
+  const onScroll = () => root.classList.toggle('is-scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 
   const form = document.querySelector<HTMLFormElement>('form[data-transmission]');
   if (form) {

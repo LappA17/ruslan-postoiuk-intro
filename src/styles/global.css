@@ -208,6 +208,11 @@ p {
   letter-spacing: 0.14em;
   color: var(--dust);
   pointer-events: none;
+  transition: opacity 0.4s;
+}
+
+.is-scrolled .hud-caption {
+  opacity: 0;
 }
 
 /* ---------- Header ---------- */
@@ -227,7 +232,7 @@ p {
   transition: background-color 0.3s, backdrop-filter 0.3s;
 }
 
-.site-header.is-scrolled {
+.is-scrolled .site-header {
   background: rgba(6, 5, 14, 0.72);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -1426,7 +1431,8 @@ main {
 /* ---------- Tablet & small laptops ---------- */
 
 @media (max-width: 1179px) {
-  .trajectory {
+  .trajectory,
+  .hud-caption {
     display: none;
   }
 
