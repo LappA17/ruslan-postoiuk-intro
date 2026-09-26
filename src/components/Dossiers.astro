@@ -1,0 +1,99 @@
+---
+import Icon from './Icon.astro';
+import Planet from './Planet.astro';
+import { missions } from '../data/cv';
+import { currentYearMonth, formatDuration, formatYearMonth, monthsBetween, pad2, toIso } from '../lib/time';
+
+const now = currentYearMonth();
+const total = pad2(missions.length);
+---
+
+{
+  missions.map((m, i) => {
+    const prev = missions[i - 1];
+    const next = missions[i + 1];
+    const titleId = `dossier-${m.id}-title`;
+    return (
+      <dialog class="dossier" id={`dossier-${m.id}`} data-dossier={m.id} aria-labelledby={titleId}>
+        <div class="dossier-inner">
+          <div class="dossier-top">
+            <span class="dossier-code">
+              Mission {pad2(i + 1)} / {total} · Dossier
+            </span>
+            <button type="button" class="icon-btn" data-dossier-close data-sfx="warpOut" aria-label="Close dossier">
+              <Icon name="close" stroke={1.8} />
+            </button>
+          </div>
+
+          <div class="dossier-scroll">
+            <div class="dossier-head">
+              <Planet hue={m.hue} size={76} ring={m.ring} />
+              <div class="dossier-name">
+                <div class="dossier-title-row">
+                  <h2 class="dossier-title" id={titleId}>{m.company}</h2>
+                  {m.via && <span class="dossier-via">{m.via}</span>}
+                </div>
+                <p class="dossier-role">{m.role}</p>
+              </div>
+              <span class:list={['status', { 'status--live': !m.end }]}>{m.end ? 'Mission complete' : 'In flight'}</span>
+            </div>
+
+            <p class="dossier-meta">
+              <span>
+                {formatYearMonth(m.start)} → {m.end ? formatYearMonth(m.end) : 'PRESENT'}
+              </span>
+              <span data-duration-since={m.end ? undefined : toIso(m.start)}>{formatDuration(monthsBetween(m.start, m.end ?? now))}</span>
+              <span>{m.place}</span>
+              <span>{m.domain}</span>
+            </p>
+
+            <div class="dossier-body">
+              <div class="dossier-side">
+                {m.intro && <p class="dossier-intro">{m.intro}</p>}
+                {m.metric && (
+                  <p class="metric">
+                    <strong>{m.metric.value}</strong>
+                    <span>{m.metric.label}</span>
+                  </p>
+                )}
+                <div>
+                  <p class="label">Payload · stack</p>
+                  <ul class="stack">
+                    {m.stack.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <div>
+                <p class="label">Mission objectives</p>
+                <ol class="objectives">
+                  {m.objectives.map((o) => (
+                    <li>
+                      <span>
+                        {o.title && <span class="objective-title">{o.title}</span>}
+                        <span class="objective-text">{o.text}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          </div>
+
+          <div class="dossier-foot">
+            <button type="button" class="btn btn-ghost btn-small" data-dossier-go={prev?.id} data-sfx="warp" disabled={!prev}>
+              ← {prev ? prev.company : 'Launch'}
+            </button>
+            <span class="dossier-counter">
+              {pad2(i + 1)} / {total}
+            </span>
+            <button type="button" class="btn btn-ghost btn-small" data-dossier-go={next?.id} data-sfx="warp" disabled={!next}>
+              {next ? next.company : 'Now'} →
+            </button>
+          </div>
+        </div>
+      </dialog>
+    );
+  })
+}

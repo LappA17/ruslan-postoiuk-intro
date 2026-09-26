@@ -1,0 +1,54 @@
+---
+import { skills } from '../data/cv';
+import { CONSTELLATION_HEIGHT, CONSTELLATION_WIDTH, constellation, constellationPath } from '../lib/constellation';
+import { pad2 } from '../lib/time';
+
+const groups = skills.map((group, gi) => ({ group, gi, points: constellation(group.items.length, 4242 + gi * 97) }));
+---
+
+<section id="skills" class="view" data-view="skills" aria-labelledby="skills-title">
+  <div class="section-head section-head--split">
+    <div>
+      <p class="overline rise">03 — Constellations</p>
+      <h2 id="skills-title" class="section-title rise" style="--delay:80ms">What I build with</h2>
+    </div>
+    <p class="section-lead section-lead--end rise" style="--delay:160ms">Hover a skill to find its star.<br />Click it to hear it.</p>
+  </div>
+
+  <div class="constellations">
+    {
+      groups.map(({ group, gi, points }) => (
+        <article class="constellation rise" style={`--delay:${80 + gi * 70}ms`} aria-labelledby={`skills-${group.id}`}>
+          <div class="constellation-head">
+            <div>
+              <h3 class="constellation-name" id={`skills-${group.id}`}>{group.name}</h3>
+              <p class="constellation-count">{pad2(group.items.length)} stars</p>
+            </div>
+            <svg class="constellation-map" viewBox={`0 0 ${CONSTELLATION_WIDTH} ${CONSTELLATION_HEIGHT}`} aria-hidden="true" focusable="false">
+              <path class="constellation-line" pathLength="1" d={constellationPath(points)} style={`animation-delay:${(0.35 + gi * 0.12).toFixed(2)}s`}></path>
+              {points.map((p, k) => (
+                <circle
+                  class="constellation-star"
+                  data-star={`${group.id}:${k}`}
+                  cx={p.x}
+                  cy={p.y}
+                  r={p.r}
+                  style={`animation-delay:${(-((k * 0.9 + gi * 0.4) % 5)).toFixed(2)}s; animation-duration:${4 + (k % 3)}s`}
+                ></circle>
+              ))}
+            </svg>
+          </div>
+          <ul class="chips">
+            {group.items.map((item, k) => (
+              <li>
+                <button type="button" class="chip" data-star={`${group.id}:${k}`} data-level={(points[k]?.level ?? 0.5).toFixed(3)} data-sfx="star">
+                  {item}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </article>
+      ))
+    }
+  </div>
+</section>

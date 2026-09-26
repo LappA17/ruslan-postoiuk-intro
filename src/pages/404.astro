@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import { withBase } from '../lib/url';
+---
+
+<Base title="Lost in space — Ruslan Postoiuk" description="This page drifted out of orbit." noindex>
+  <main id="main" class="lost">
+    <p class="overline rise"><span class="dot" aria-hidden="true"></span>Signal lost · 404</p>
+    <h1 class="display rise" style="--delay:120ms">Lost in<br />space</h1>
+    <p class="lead rise" style="--delay:240ms">This page drifted out of orbit. The mission log is still where you left it.</p>
+    <p class="cta-row rise" style="--delay:360ms">
+      <a class="btn btn-primary" href={withBase('')}>Back to base</a>
+    </p>
+  </main>
+</Base>

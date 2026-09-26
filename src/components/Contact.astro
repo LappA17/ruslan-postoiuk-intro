@@ -1,0 +1,65 @@
+---
+import Icon from './Icon.astro';
+import { profile } from '../data/cv';
+
+const channels = [
+  { label: 'Email', value: profile.email, href: `mailto:${profile.email}`, icon: 'mail', external: false },
+  { label: 'LinkedIn', value: profile.linkedin.label, href: profile.linkedin.url, icon: 'linkedin', external: true },
+  { label: 'GitHub', value: profile.github.label, href: profile.github.url, icon: 'github', external: true },
+] as const;
+---
+
+<section id="contact" class="view" data-view="contact" aria-labelledby="contact-title">
+  <div class="contact">
+    <div>
+      <p class="overline rise">04 — Contact</p>
+      <h2 id="contact-title" class="section-title section-title--large rise" style="--delay:80ms">Open a channel</h2>
+      <p class="section-lead rise" style="--delay:160ms">Email is the fastest way to reach me. Or send a transmission from here — it opens your mail app, nothing is stored.</p>
+      <ul class="channels rise" style="--delay:240ms">
+        {
+          channels.map((c) => (
+            <li>
+              <a class="channel" href={c.href} target={c.external ? '_blank' : undefined} rel={c.external ? 'noopener' : undefined}>
+                <Icon name={c.icon} size={22} stroke={1.5} />
+                <span class="channel-text">
+                  <span class="channel-label">{c.label}</span>
+                  <span class="channel-value">{c.value}</span>
+                </span>
+                <Icon name="arrow-up-right" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="signoff rise" style="--delay:320ms">
+        <span class="signoff-words">Clear skies,</span>
+        <span class="signoff-name">Ruslan</span>
+      </p>
+    </div>
+
+    <form class="console rise" style="--delay:200ms" data-transmission={profile.email} aria-labelledby="console-title" novalidate>
+      <div class="console-head">
+        <span id="console-title">Transmission console</span>
+        <span class="console-status"><span class="dot" aria-hidden="true"></span>Channel open</span>
+      </div>
+      <div class="field-row">
+        <label class="field">
+          Your name
+          <input type="text" name="name" autocomplete="name" placeholder="Jane Doe" />
+        </label>
+        <label class="field">
+          Reply-to email
+          <input type="email" name="reply" autocomplete="email" placeholder="jane@company.com" />
+        </label>
+      </div>
+      <label class="field">
+        Message
+        <textarea name="message" rows="7" placeholder="> Type your message — every keystroke lights a star."></textarea>
+      </label>
+      <div class="console-foot">
+        <span class="console-note" data-note aria-live="polite">Channel idle</span>
+        <button type="submit" class="btn btn-primary" data-sfx="own">Transmit<Icon name="arrow-up-right" stroke={2} /></button>
+      </div>
+    </form>
+  </div>
+</section>

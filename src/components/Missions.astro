@@ -1,0 +1,103 @@
+---
+import Planet from './Planet.astro';
+import { missions, type Mission } from '../data/cv';
+import { currentYearMonth, formatYearMonth, monthsBetween } from '../lib/time';
+import { NODE_POSITIONS, TRAJECTORY_HEIGHT, TRAJECTORY_WIDTH, futurePath, launchPoint, pointAt, trajectoryPath } from '../lib/trajectory';
+
+const NUMBER_WORDS = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+const now = currentYearMonth();
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const tenure = (m: Mission) => monthsBetween(m.start, m.end ?? now);
+const range = (m: Mission) => `${formatYearMonth(m.start)} → ${m.end ? formatYearMonth(m.end) : 'NOW'}`;
+const float = (i: number) => `--float-dur:${(7 + (i % 3) * 1.3).toFixed(1)}s; --float-delay:${(-i * 1.7).toFixed(1)}s`;
+
+const nodes = missions.map((mission, i) => {
+  const p = pointAt(NODE_POSITIONS[i] ?? 0.5);
+  return {
+    mission,
+    size: Math.round(clamp(16 + tenure(mission) * 0.55, 18, 34) * 2),
+    x: ((p.x / TRAJECTORY_WIDTH) * 100).toFixed(2),
+    y: ((p.y / TRAJECTORY_HEIGHT) * 100).toFixed(2),
+    delay: 300 + i * 160,
+    float: float(i),
+    last: i === missions.length - 1,
+  };
+});
+
+const rows = [...missions].reverse().map((mission, i) => ({
+  mission,
+  size: Math.round(clamp(12 + tenure(mission) * 0.33, 14, 22) * 2),
+  delay: 160 + i * 110,
+  float: float(i),
+}));
+---
+
+<section id="missions" class="view" data-view="missions" aria-labelledby="missions-title">
+  <div class="section-head">
+    <p class="overline rise">02 — Mission log</p>
+    <h2 id="missions-title" class="section-title rise" style="--delay:80ms">{NUMBER_WORDS[missions.length] ?? missions.length} missions,<br />one trajectory</h2>
+    <p class="section-lead rise" style="--delay:160ms">Choose a planet to open its dossier. Planet size shows time on mission.</p>
+  </div>
+
+  <div class="trajectory">
+    <svg viewBox={`0 0 ${TRAJECTORY_WIDTH} ${TRAJECTORY_HEIGHT}`} aria-hidden="true" focusable="false">
+      <path class="trajectory-path" pathLength="1" d={trajectoryPath}></path>
+      <path class="trajectory-future" d={futurePath}></path>
+      <circle class="trajectory-launch" cx={launchPoint.x} cy={launchPoint.y} r="3.5"></circle>
+    </svg>
+    <span class="launch-label" aria-hidden="true" style={`left:${((launchPoint.x / TRAJECTORY_WIDTH) * 100).toFixed(2)}%; top:${((launchPoint.y / TRAJECTORY_HEIGHT) * 100).toFixed(2)}%`}>
+      Launch · {missions[0]?.start[0]}
+    </span>
+    {
+      nodes.map((n) => (
+        <button
+          type="button"
+          class:list={['node', 'rise', { 'node--end': n.last }]}
+          data-mission={n.mission.id}
+          data-sfx="warp"
+          aria-haspopup="dialog"
+          style={`--x:${n.x}%; --y:${n.y}%; --d:${n.size}px; --delay:${n.delay}ms`}
+        >
+          <span class="node-float" style={n.float}>
+            <Planet hue={n.mission.hue} size={n.size} ring={n.mission.ring} pulse={!n.mission.end} />
+          </span>
+          <span class="node-label">
+            <span class="visually-hidden">Open mission dossier:</span>
+            <span class="node-company">
+              {n.mission.company}
+              {!n.mission.end && <span class="tag">In flight</span>}
+            </span>
+            <span class="node-role">{n.mission.role}</span>
+            <span class="node-range">{range(n.mission)}</span>
+          </span>
+        </button>
+      ))
+    }
+  </div>
+
+  <ol class="mission-list">
+    {
+      rows.map((r) => (
+        <li class="rise" style={`--delay:${r.delay}ms`}>
+          <button type="button" class="mission-row" data-mission={r.mission.id} data-sfx="warp" aria-haspopup="dialog">
+            <span class="mission-row-planet">
+              <span class="node-float" style={r.float}>
+                <Planet hue={r.mission.hue} size={r.size} ring={r.mission.ring} pulse={!r.mission.end} />
+              </span>
+            </span>
+            <span class="mission-row-text">
+              <span class="node-company">
+                {r.mission.company}
+                {!r.mission.end && <span class="tag">In flight</span>}
+              </span>
+              <span class="node-role">{r.mission.role}</span>
+              <span class="node-range">{range(r.mission)}</span>
+              <span class="mission-row-summary">{r.mission.summary}</span>
+              <span class="mission-row-open">Open dossier →</span>
+            </span>
+          </button>
+        </li>
+      ))
+    }
+  </ol>
+</section>

@@ -1,0 +1,15 @@
+---
+import Icon from './Icon.astro';
+import { tabs } from '../data/nav';
+---
+
+<nav class="tabbar" aria-label="Sections">
+  {
+    tabs.map((tab) => (
+      <a href={`#${tab.id}`} data-tab={tab.id} data-sfx="chirp" aria-current={tab.id === 'about' ? 'page' : 'false'}>
+        <Icon name={tab.icon} size={22} stroke={1.5} />
+        <span>{tab.label}</span>
+      </a>
+    ))
+  }
+</nav>

@@ -1,0 +1,29 @@
+---
+import Icon from './Icon.astro';
+import { profile } from '../data/cv';
+import { tabs } from '../data/nav';
+---
+
+<header class="site-header">
+  <a class="brand" href="#about" data-tab="about" data-sfx="chirp" aria-label={`${profile.name}, home`}>
+    <span class="monogram" aria-hidden="true">RP<span class="monogram-orbit"></span></span>
+    <span class="brand-name">{profile.name}</span>
+  </a>
+  <div class="header-right">
+    <nav class="tabs" aria-label="Sections">
+      {
+        tabs.map((tab) => (
+          <a class="tab" href={`#${tab.id}`} data-tab={tab.id} data-sfx="chirp" aria-current={tab.id === 'about' ? 'page' : 'false'}>
+            <span class="tab-num">{tab.n}</span>
+            <span>{tab.label}</span>
+          </a>
+        ))
+      }
+    </nav>
+    <button class="sound" type="button" data-sound-toggle data-sfx="own" aria-pressed="true" aria-label="Sound">
+      <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <Icon name="speaker-off" class="sound-off-icon" />
+      <span class="sound-label">SOUND ON</span>
+    </button>
+  </div>
+</header>

@@ -1,0 +1,19 @@
+---
+import type { PlanetHue } from '../data/cv';
+
+interface Props {
+  hue: PlanetHue;
+  size: number;
+  ring?: boolean;
+  pulse?: boolean;
+}
+
+const { hue, size, ring = false, pulse = false } = Astro.props;
+const background = `radial-gradient(circle at 32% 30%, ${hue.hi} 0%, ${hue.base} 36%, ${hue.lo} 80%, #04050c 100%)`;
+const shadow = `0 0 ${Math.round(size * 0.6)}px ${hue.glow}, inset -${Math.round(size * 0.14)}px -${Math.round(size * 0.16)}px ${Math.round(size * 0.3)}px rgba(0,0,0,0.5)`;
+---
+
+<span class:list={['planet', { 'planet--ringed': ring }]} style={`--d:${size}px; background:${background}; box-shadow:${shadow}`}>
+  {ring && <span class="planet-ring" />}
+  {pulse && <span class="planet-pulse" />}
+</span>

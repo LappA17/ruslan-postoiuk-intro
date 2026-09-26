@@ -1,0 +1,89 @@
+---
+import '@fontsource/unbounded/latin-300.css';
+import '@fontsource/unbounded/latin-400.css';
+import '@fontsource/unbounded/latin-500.css';
+import '@fontsource/manrope/latin-400.css';
+import '@fontsource/manrope/latin-500.css';
+import '@fontsource/manrope/latin-600.css';
+import '@fontsource/manrope/latin-700.css';
+import '@fontsource/jetbrains-mono/latin-400.css';
+import '@fontsource/jetbrains-mono/latin-500.css';
+import '../styles/global.css';
+import SkyLayers from '../components/SkyLayers.astro';
+import { profile } from '../data/cv';
+import { yearsSince } from '../lib/time';
+import { withBase } from '../lib/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const years = yearsSince(profile.careerStart);
+const {
+  title = `${profile.name} — ${profile.title}`,
+  description = `${profile.name}, software engineer with ${years} years of experience building AI-powered backend systems — document intelligence, dynamic pricing and recommendation engines — on Node.js, NestJS and AWS.`,
+  noindex = false,
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://lappa17.github.io');
+const home = new URL(withBase(''), site).href;
+const ogImage = new URL(withBase('og.png'), site).href;
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  jobTitle: 'Software Engineer',
+  description,
+  url: home,
+  email: `mailto:${profile.email}`,
+  sameAs: [profile.linkedin.url, profile.github.url],
+  knowsLanguage: ['en', 'pl', 'uk', 'ru'],
+  alumniOf: { '@type': 'CollegeOrUniversity', name: profile.education.school },
+};
+---
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={home} />}
+    <meta name="theme-color" content="#05060f" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={withBase('apple-touch-icon.png')} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={profile.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={home} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${profile.name} — ${profile.title}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        root.classList.remove('no-js');
+        root.classList.add('js');
+        try {
+          if (localStorage.getItem('ruslan-postoiuk:sound') === 'off') root.classList.add('is-muted');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <SkyLayers />
+    <slot />
+    <script>
+      import '../lib/app';
+    </script>
+  </body>
+</html>

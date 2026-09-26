@@ -1,0 +1,56 @@
+---
+import { Picture } from 'astro:assets';
+import Icon from './Icon.astro';
+import portrait from '../assets/portrait.jpg';
+import { profile } from '../data/cv';
+import { toIso, yearsSince } from '../lib/time';
+import { withBase } from '../lib/url';
+
+const years = yearsSince(profile.careerStart);
+---
+
+<section id="about" class="view is-active" data-view="about" aria-labelledby="about-title">
+  <div class="about">
+    <div class="about-text">
+      <p class="overline rise" style="--delay:200ms"><span class="dot" aria-hidden="true"></span>Software engineer · Backend &amp; AI</p>
+      <h1 id="about-title" class="display rise" style="--delay:320ms">Ruslan<br />Postoiuk</h1>
+      <p class="lead rise" style="--delay:460ms">{profile.lead}</p>
+      <div class="cta-row rise" style="--delay:600ms">
+        <a class="btn btn-primary" href="#missions" data-tab="missions" data-sfx="chirp">Explore missions<Icon name="arrow-right" stroke={2} /></a>
+        <a class="btn btn-ghost" href={withBase(profile.cvFile)} download={profile.cvFile}>Download CV<Icon name="download" stroke={1.8} /></a>
+        <a class="link" href={`mailto:${profile.email}`}>{profile.email}</a>
+      </div>
+      <p class="hint rise" style="--delay:760ms">
+        <Icon name="speaker" size={16} />
+        <span data-sound-hint>CLICK ANYWHERE — THE COSMOS WILL ANSWER</span>
+      </p>
+    </div>
+
+    <div class="portrait rise" style="--delay:520ms">
+      <span class="portrait-glow" aria-hidden="true"></span>
+      <span class="portrait-ring" aria-hidden="true"></span>
+      <span class="portrait-orbit" aria-hidden="true"></span>
+      <Picture
+        src={portrait}
+        formats={['avif', 'webp']}
+        widths={[240, 400, 640]}
+        quality={80}
+        sizes="(max-width: 1023px) 160px, 320px"
+        alt={`Portrait of ${profile.name}`}
+        class="portrait-img"
+        loading="eager"
+        fetchpriority="high"
+      />
+      <span class="portrait-dash" aria-hidden="true"></span>
+      <span class="portrait-orbit portrait-orbit--inner" aria-hidden="true"></span>
+    </div>
+
+    <ul class="telemetry rise" style="--delay:900ms">
+      <li><strong data-years-since={toIso(profile.careerStart)}>{years}</strong><span>years of engineering</span></li>
+      <li><strong>10k+</strong><span>vehicle reports a month, parsed by AI</span></li>
+      <li><strong>500k+</strong><span>requests per second on the Flip platform</span></li>
+      <li><strong>{profile.languages.length}</strong><span>languages — {profile.languages.join(', ')}</span></li>
+      <li><strong>{profile.education.end[0]}</strong><span>{profile.education.degree}, {profile.education.school}</span></li>
+    </ul>
+  </div>
+</section>
